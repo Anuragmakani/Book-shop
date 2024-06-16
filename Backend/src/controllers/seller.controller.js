@@ -10,8 +10,14 @@ const sellerRegistration = asyncHandler(async (req, res) => {
   try {
     const { sellerName, email, role } = req.body;
 
-    if ([sellerName, email].some((field) => field?.trim() === "")) {
+    if ([sellerName, email, role].some((field) => field?.trim() === "")) {
       throw new ApiError(400, "Invalid request body");
+    }
+
+    if(role !== "seller") {
+      return res
+      .status(400)
+      .json(new ApiError(400, " only seller allow to register"));
     }
 
     const existedSeller = await db.Seller.findOne({
@@ -33,7 +39,6 @@ const sellerRegistration = asyncHandler(async (req, res) => {
     };
 
     const seller = await db.Seller.create(reqBody);
-
     return res
       .status(201)
       .json(new ApiResponse(201, seller, "register successfully"));

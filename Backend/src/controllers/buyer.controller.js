@@ -9,8 +9,14 @@ const createBuyer = asyncHandler(async (req, res) => {
   try {
     const { buyerName, email, role } = req.body;
 
-    if ([buyerName, email].some((field) => field?.trim() === "")) {
+    if ([buyerName, email, role].some((field) => field?.trim() === "")) {
       throw new ApiError(400, "Invalid request body");
+    }
+
+    if (role !== "buyer") {
+      return res
+        .status(400)
+        .json(new ApiError(400, " only buyer allow to register"));
     }
 
     const existedBuyer = await db.Buyer.findOne({
